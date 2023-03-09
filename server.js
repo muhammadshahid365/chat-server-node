@@ -25,6 +25,18 @@ app.post('/login', (req, res) => {
   }
 })
 
+app.post('/logout', (req, res) => {
+  const userId = req.body.userId
+  const token = req.body.token
+  for(let i = 0; i < clients.length; i++){
+    let cl = clients[i]
+    if(cl.userId === userId && cl.token === token){
+      clients.splice(i, 1)
+      res.json({message: 'ok'})
+    }
+  }
+})
+
 app.post('/verify-token', (req, res) => {
   const token = req.body.previousToken
 
