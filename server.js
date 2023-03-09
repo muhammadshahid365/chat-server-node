@@ -67,18 +67,25 @@ wsServer.on('connection', (connection) => {
 
 const handleMassage = (connection, message) => {
   const msg = JSON.parse(message)
+  const user = msg.user
   if(msg.type === 'initialize'){
     initializeConnection(connection, msg)
   } else {
-    const otherClients = clients.filter(cl => msg.userId !== cl.userId)
+    const otherClients = clients.filter(cl => user.userId !== cl.userId)
       if(otherClients.length > 0){
         otherClients.forEach(client => {
           msg.username = client.username
-          console.log(client.userId, client.username, typeof(client.connection));
-          client.connection.send(JSON.stringify(msg))
+          console.log(user.userId, user.username);
+          client.connection.send(JSON.stringify({
+            message: msg.message,
+            username: user.username
+          }))
         })
       } else {
-        connection.send(JSON.stringify(msg))
+        connection.send(JSON.stringify({
+          message: msg.message,
+          username: user.username
+        }))
       }
   }
 }
