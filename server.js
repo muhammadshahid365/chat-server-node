@@ -33,8 +33,11 @@ app.post('/logout', (req, res) => {
     if(cl.userId === userId && cl.token === token){
       clients.splice(i, 1)
       res.json({message: 'ok'})
+      return;
     }
   }
+
+  res.json({message: 'user not found!'})
 })
 
 app.post('/verify-token', (req, res) => {
