@@ -16,11 +16,32 @@ app.post('/login', (req, res) => {
     const id = uuid.v4()
     clients.push({
       userId: id,
-      username
+      username,
+      token: id
     })
-    res.json({ userId: id, message: 'ok' })
+    res.json({ userId: id, token: id, message: 'ok' })
   } else {
     res.json({ message: 'Username already exists.' })
+  }
+})
+
+app.post('/verify-token', (req, res) => {
+  const token = req.body.previousToken
+  if(clients.length < 1){
+    console.log('token not verified');
+    res.json({message: 'not verified'})
+    return;
+  }
+  
+  for(let cl of clients) {
+    if(cl.token === token){
+      console.log('token verified');
+      res.json({ userId: cl.userId, username: cl.username, message: 'verified' })
+      return;
+    }
+
+    console.log('token not verified');
+    res.json({message: 'not verified'})
   }
 })
 
@@ -37,7 +58,7 @@ wsServer.on('connection', (connection) => {
 const handleMassage = (connection, message) => {
   const msg = JSON.parse(message)
   if(msg.type === 'initialize'){
-    initializeConnection(connection, msg.userId)
+    initializeConnection(connection, msg)
   } else {
     const otherClients = clients.filter(cl => msg.userId !== cl.userId)
       if(otherClients.length > 0){
@@ -51,9 +72,9 @@ const handleMassage = (connection, message) => {
   }
 }
 
-const initializeConnection = (connection, userId) => {
+const initializeConnection = (connection, msg) => {
   clients.forEach(cl => {
-    if(cl.userId === userId){
+    if(cl.userId === msg.userId && cl.token === msg.token){
       cl.connection = connection
     }
   })
