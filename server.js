@@ -27,22 +27,17 @@ app.post('/login', (req, res) => {
 
 app.post('/verify-token', (req, res) => {
   const token = req.body.previousToken
-  if(clients.length < 1){
-    console.log('token not verified');
-    res.json({message: 'not verified'})
-    return;
-  }
-  
+
   for(let cl of clients) {
     if(cl.token === token){
       console.log('token verified');
       res.json({ userId: cl.userId, username: cl.username, message: 'verified' })
       return;
     }
-
-    console.log('token not verified');
-    res.json({message: 'not verified'})
   }
+
+  console.log('token not verified');
+  res.json({message: 'not verified'})
 })
 
 const server = http.createServer(app)
