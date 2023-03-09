@@ -73,6 +73,7 @@ const handleMassage = (connection, message) => {
     const otherClients = clients.filter(cl => msg.userId !== cl.userId)
       if(otherClients.length > 0){
         otherClients.forEach(client => {
+          msg.username = client.username
           console.log(client.userId, client.username, typeof(client.connection));
           client.connection.send(JSON.stringify(msg))
         })
